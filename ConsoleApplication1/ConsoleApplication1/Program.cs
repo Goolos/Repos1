@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 
 namespace Game
 {
@@ -11,173 +10,50 @@ namespace Game
     {
         static void Main(string[] args)
         {
+           
+             int[] mas = Read.ReadFromCSV("text.csv");
+             Game game = new Game(mas);
+             if (game.CorrectArray(mas) && game.CorrectIntSize(mas.Length))
+             {
+               Console.WriteLine("Игровое поле:");
+                for (int i = 0; i < mas.Length; i++)
+                 {
+                     Console.Write(mas[i] + " ");
+                 }
+             }
+             else throw new ArgumentException("Массив некорректен или размер поля с данными аргументами не может существовать");
+             Console.WriteLine();
+             Print.PrintInfo(game.Numbers);
+             int point = 5;
+             if (game.GetLocation(point) != null)
+             {
+                 Console.WriteLine("Позиция числа 5:x = {0},y = {1}", game.GetLocation(5).x, game.GetLocation(5).y);
+             }
+             else throw new ArgumentException("Данное число не удалось найти");
+             int pyatnashka1 = 2;
+             if (game.ShiftOrImpossible(pyatnashka1))
+             {
+                 Print.PrintInfo(game.Numbers);
+             }
+             else throw new ArgumentException("Данное число не удалось найти или невозможно поменять местами с нулём");
 
-
-            List<int> ChikForGame = new List<int>();
-            Chek ch = new Chek();
-
-
-            Console.WriteLine("Рандом или из файла жми 1 Рандом, жми 2 из файла: ");
-            string numb = Console.ReadLine();
-            if (numb == "1")
-            {
-                Console.WriteLine("Введите кол-во фишек в игре: ");
-                int perem = Convert.ToInt32(Console.ReadLine());
-                ch.CheckingOnTheSquare(perem);
-
-                bool ChekTrue = false;
-
-                for (int length = 0; length < perem; length++)
-                {
-
-                    ChikForGame.Add(length);
-
-                }
-                while (!ChekTrue)
-                {
-
-                    ch.CheckForCorrectness(ChikForGame);
-                    Game2 RandomGameArea = new Game2(ChikForGame, ch);
-                    RandomGameArea.Mixer(ChikForGame);
-
-                    if (ch.CheckForCorrectness(ChikForGame))
-                    {
-                        ChekTrue = true;
-                    }
-
-
-                }
-            }
-
-            else if (numb == "2")
-            {
-                ChikForGame = FromSCV(ChikForGame);
-                ch.CheckForCorrectness(ChikForGame);
-                ch.CheckingOnTheSquare(ChikForGame.Count);
-            }
-            else
-            {
-                throw new ArgumentException("Жаль, вы должны были выбрать поле");
-
-            }
-
-            ch.CheckForCorrectness(ChikForGame);
-            ch.ChekOnTheNullChik(ChikForGame.Count, ChikForGame);
-            ch.ChekOnTherepeat(ChikForGame.Count, ChikForGame);
-
-
-            var game = new Game3(ChikForGame, ch);
-
-
-
-
-            funcOut(game);
-
-            string N = "";
-            int scoreGame = 0;
-
-            while (N != "N")
-            {
-                if (game.PublicIntHistory > 0)
-                {
-
-                    Console.WriteLine("Вернуться назад???? ");
-                    string MoveBack = Console.ReadLine();
-
-                    bool ChekBack = false;
-                    if (MoveBack == "Y")
-                    {
-                        Console.WriteLine("На сколько ходов? ");
-                        int value1 = Convert.ToInt32(Console.ReadLine());
-                        game.MoveBack(value1);
-                        funcOut(game);
-                        ChekBack = true;
-                    }
-
-
-                    if (ChekBack == true)
-                    {
-                        Console.WriteLine("Вернуться в перед???? ");
-                        string MoveForward = Console.ReadLine();
-                        if (MoveForward == "Y")
-                        {
-                            Console.WriteLine("На сколько ходов? ");
-                            int value1 = Convert.ToInt32(Console.ReadLine());
-                            game.MoveForward(value1);
-                            funcOut(game);
-
-                        }
-                    }
-                }
-                //Console.Clear();
-
-                int value = Convert.ToInt32(Console.ReadLine());
-
-                game.ShiftValue(value, game);
-
-                if (game.CheckingTheEndOfTheGame())
-                {
-                    funcOut(game);
-                    break;
-                }
-                Console.WriteLine("Ход номер: " + (scoreGame + 1));
-                funcOut(game);
-
-
-                ++scoreGame;
-            }
-            Console.WriteLine("Game over");
-            Console.WriteLine("Число ходов: " + scoreGame);
-
-
+            Game game = new Game(mas);
+            int[] mas2 = { 1, 2, 3, 4, 5, 6, 7, 0, 8 };
+            Game2 game2 = Game2.Randomize(game);
+            Console.WriteLine("Game2 Random");
+            Print.PrintInfo(game2.Numbers);
+            Game3 game3 = new Game3(mas2);
+            Console.WriteLine("Game3 Исходно");
+            Print.PrintInfo(game3.Numbers);
+            game3.ShiftOrImpossible(7);
+            game3.ShiftOrImpossible(4);
+            Print.PrintInfo(game3.Numbers);
+            game3.ShiftOrImpossible(1);
+            Print.PrintInfo(game3.Numbers);
+            game3.GetHistory();
+            game3.DeleteLastStep();
+            Print.PrintInfo(game3.Numbers);
+            Console.ReadLine();
         }
-
-        public static List<int> FromSCV(List<int> areaChikDinam)
-        {
-            int integer = 0;
-            string file1 = @"C:\Users\Home\Desktop\ПЯТНАШКИ2-3 ЛАСТ ЕДИТИОН\Game2-3\Game\Game\File.csv";
-            try
-            {
-                string[] file = File.ReadAllLines(file1);
-                Char ch = ';';
-
-                for (int i = 0; i < file.Length; ++i)
-                {
-                    string[] chfile = file[i].Split(ch);
-                    foreach (var substring in chfile)
-                    {
-                        areaChikDinam.Add(Convert.ToInt32(substring));
-
-                        ++integer;
-                    }
-                }
-
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("The file could not be read:");
-                Console.WriteLine(e.Message);
-
-            }
-
-            return areaChikDinam;
-        }
-
-
-        static void funcOut(Game game)
-        {
-            for (int x = 0; x < game.IntSize; ++x)
-            {
-                for (int y = 0; y < game.IntSize; ++y)
-                {
-                    Console.Write(game.GameArea[x, y] + " ");
-                }
-                Console.WriteLine();
-            }
-
-        }
-
-
-
     }
 }
