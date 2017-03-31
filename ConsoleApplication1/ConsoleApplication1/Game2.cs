@@ -12,7 +12,7 @@ namespace Game
         {
             if (ThisGameIsEnd()) throw new ArgumentException("Игра закончена!");
         }
-        private bool ThisGameIsEnd()
+        public bool ThisGameIsEnd()
         {
             int count = 1, lastValue = Side;
 
